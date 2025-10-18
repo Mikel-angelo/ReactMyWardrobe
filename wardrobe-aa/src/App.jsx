@@ -1,92 +1,55 @@
-// src/App.jsx
-import { useEffect, useState } from "react";
-import { sampleItems,sampleLocations } from "./data/sampleData";
+// Main application component.
+// Here we combine our custom hooks and render UI components.
+// App acts as the "conductor" – it doesn’t handle data logic directly.
+
+import { useState } from "react";
+import { useItems } from "./hooks/useItems";
+import { useLocations } from "./hooks/useLocations";
 import LocationCard from "./components/LocationCard";
 import AddLocationForm from "./components/AddLocationForm";
-import "./index.css";
-import { API_ROUTES } from "./config/api";
+import PopupManager from "./components/PopupManager";
 
 export default function App() {
-  // create state for items and locations
-  const [items, setItems] = useState([]);
-  const [locations, setLocations] = useState([]);
+  // Import data + actions from our custom hooks
+  const { items, handleAddItem } = useItems();
+  const { locations, handleAddLocation, loading, error } = useLocations();
+  
+   // Local UI state for controlling the modal
+  const [showAddLocation, setShowAddLocation] = useState(false);
 
-  // fetch data when component mounts
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const [locRes, itemRes] = await Promise.all([
-        fetch(API_ROUTES.LOCATIONS),
-        fetch(API_ROUTES.ITEMS),
-      ]);
-      const [locData, itemData] = await Promise.all([
-        locRes.json(),
-        itemRes.json(),
-      ]);
-      setLocations(locData);
-      setItems(itemData);
-    } catch (err) {
-      console.error("Error loading data:", err);
-    }
-  };
+  // --- Basic UX handling ---
+  if (loading) return <p>Loading wardrobe...</p>;
+  if (error) return <p style={{ color: "red" }}>Error: {error.message}</p>;
 
-  fetchData();
-}, []);
-
-  async function addLocation(newLocation) {
-    try {
-      const response = await fetch(API_ROUTES.LOCATIONS, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newLocation),
-      });
-      const addedLocation = await response.json();
-      setLocations([...locations, addedLocation]); //this is where the state of react is updated
-    } catch (error) {
-      console.error("Error adding location:", error);
-    }
-  }
-
-  // Lifted item creation to App so server interaction and state updates
-  // are centralized (mirrors how addLocation works)
-  async function addItem(newItem) {
-    try {
-      const response = await fetch(API_ROUTES.ITEMS, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newItem),
-      });
-      const added = await response.json();
-      setItems([...items, added]);
-    } catch (err) {
-      console.error("Error adding item:", err);
-    }
-  }
-
+  // --- Render UI ---
   return (
-    <div className="app">
-      <h1>My Wardrobe Organizer</h1>
+    <div className="container">
+      <div className="app-header">
+      <h1>👕 My Wardrobe</h1>
 
-      <AddLocationForm
-        onAddLocation={addLocation}
-      />
+        {/* Add new wardrobe section button */}
+        <button onClick={() => setShowAddLocation(true)}>+ Add Location</button>
+      </div>
 
-      <p>Below are your current wardrobe sections:</p>
+      {/* The popup itself */}
+      <PopupManager isOpen={showAddLocation} onClose={() => setShowAddLocation(false)} title="Add New Location">
+        <AddLocationForm
+          onAddLocation={handleAddLocation}
+          onClose={() => setShowAddLocation(false)} 
+        />
+      </PopupManager>
 
+      {/* Render one card per location */}
       <div className="wardrobe-grid">
-        {locations.map((location) => (
+        {locations.map((loc) => (
           <LocationCard
-            key={location.id}
-            location={location}
+            key={loc.id}
+            location={loc}
             items={items}
-            // pass down the centralized handler instead of setItems
-            onAddItem={addItem}
+            onAddItem={handleAddItem}
           />
         ))}
       </div>
-
     </div>
   );
 }

@@ -1,61 +1,71 @@
-// form to add an  item
+// Component: AddItemForm
+// Purpose: Form for adding a new item inside a specific wardrobe location.
+// It only handles UI logic — backend calls and state updates are delegated to the parent.
+
 import { useState } from "react";
-import { API_ROUTES } from "../config/api";
 
-
-function AddItemForm({ locationId, onAddItem, onClose }) {
+export default function AddItemForm({ locationId, onAddItem, onClose }) {
+  // Local state for the input fields
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [season, setSeason] = useState("");
 
-  const handleSubmit = async (e) => {
+  // --- Handle submit event ---
+  async function handleSubmit(e) {
     e.preventDefault();
+    if (!name.trim()) return; // basic validation
 
+    // Build the item object to send
     const newItem = {
       name,
       category,
       season,
-      locationId,
+      locationId, // tie the item to a specific location
     };
 
-    // delegate server call and state update to parent
-    try {
-      await onAddItem(newItem);
-      onClose();
-    } catch (err) {
-      console.error("Error adding item via parent handler:", err);
-    }
-  };
+    // Trigger the parent’s add handler (→ hook → API)
+    await onAddItem(newItem);
+
+    // Clear form fields
+    setName("");
+    setCategory("");
+    setSeason("");
+
+    // Optionally close popup/modal after adding
+    if (onClose) onClose();
+  }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      className="add-item-form"
+   >
       <input
         type="text"
-        placeholder="Item name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        required
+        placeholder="Item name"
       />
+
       <input
         type="text"
-        placeholder="Category"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-      />
+        placeholder="Category (e.g. T-shirt)"
+         />
+
       <input
         type="text"
-        placeholder="Season"
         value={season}
         onChange={(e) => setSeason(e.target.value)}
+        placeholder="Season (e.g. Summer)"
       />
-      <div className="popup-buttons">
-        <button type="submit">Save</button>
-        <button type="button" onClick={onClose} className="cancel">
-          Cancel
-        </button>
+
+      <div className="form-buttons">
+        <button type="submit" className="submit-btn">Add</button>
+        <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
       </div>
+
     </form>
   );
 }
-
-export default AddItemForm;

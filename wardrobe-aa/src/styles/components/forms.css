@@ -1,0 +1,45 @@
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form input,
+form textarea {
+  margin-bottom: 0.6rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.submit-btn {
+  background: #0077ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #005fcc;
+}
+
+.cancel-btn {
+  background: #ddd;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background: #bbb;
+}

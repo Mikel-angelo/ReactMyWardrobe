@@ -1,0 +1,45 @@
+/* Reset margins, fonts, and basic box sizing */
+
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background-color: #f8f9fa;
+  color: #222;
+}
+
+/* Global container spacing */
+/* Give breathing space to the main app area */
+#root {
+  padding: 2rem;
+}
+
+.container {
+  width: 80vw;           /* Default: 80% of viewport width */
+  max-width: 1200px;     /* Cap on very wide monitors */
+  margin: 0 auto;        /* Center horizontally */
+  padding: 2rem 0;       /* Vertical breathing space */
+}
+
+/* Tablet view (below ~1024px width) */
+@media (max-width: 1024px) {
+  .container {
+    width: 85vw;
+  }
+}
+
+/* Mobile view (below ~768px width) */
+@media (max-width: 768px) {
+  .container {
+    width: 90vw;
+    padding: 1.5rem 0;   /* slightly tighter spacing on small screens */
+  }
+}
+
+/* Ultra-wide monitors (above ~1600px width) */
+@media (min-width: 1600px) {
+  .container {
+    width: 70vw;
+  }
+}
+
+

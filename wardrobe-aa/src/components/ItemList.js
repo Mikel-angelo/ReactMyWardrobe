@@ -1,1 +1,0 @@
-// list of clothes inside a section

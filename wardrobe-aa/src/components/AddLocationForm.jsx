@@ -1,43 +1,61 @@
-// form to add new drawers/sections
+// Component: AddLocationForm
+// Purpose: UI form for adding a new wardrobe location (e.g., "Top Shelf", "Drawer 2").
+// It doesn’t know how data is stored — it simply calls the parent’s onAddLocation() handler.
 
 import { useState } from "react";
 
-function AddLocationForm({ onAddLocation }) {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+export default function AddLocationForm({ onAddLocation, onClose }) {
+  // Local state for the input field value
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [comments, setComments] = useState("");
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); // prevent page reload
-        if (name.trim() === "") return; // simple validation
+  // --- Handle form submission ---
+  async function handleSubmit(e) {
+    e.preventDefault(); // prevent page reload
+    if (!name.trim()) return; // ignore empty submissions
 
-        // create new location object   
-        const newLocation = {
-            id: Date.now(), // quick unique id
-            name: name.trim(),
-            description: description.trim(),
-        };
+    // Construct the new location object
+    const newLocation = { name, description, comments };
 
-        onAddLocation(newLocation); // send new location up to App
-        setName(""); // reset form
-        setDescription("");
-    };
+    // Call the parent’s function (which internally calls the hook → API)
+    await onAddLocation(newLocation);
 
-    return (
-        <form className="add-location-form" onSubmit={handleSubmit}>
-            <input
-                type="text"
-                placeholder="Location Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-            />
-            <input
-                type="text"
-                placeholder="Description"
-                value={description} 
-                onChange={(e) => setDescription(e.target.value)}
-            />
-            <button type="submit">Add Location</button>
-        </form>
-    );
+    // Clear the input field after adding
+    setName("");
+    setDescription("");
+    setComments("");
+    if (onClose) onClose();
+  }
+
+  return (
+    <form onSubmit={handleSubmit} style={{ marginBottom: "1rem" }}>
+      <input
+        type="text"
+        value={name}
+        placeholder="Add new location (e.g., Top Shelf)"
+        onChange={(e) => setName(e.target.value)}
+      />
+
+        <input
+        type="text"
+        value={description}
+        placeholder="Description"
+        onChange={(e) => setDescription(e.target.value)}
+      />
+
+      <input
+        type="text"
+        value={comments}
+        placeholder="Comments"
+        onChange={(e) => setComments(e.target.value)}
+      />    
+
+      {/* Both buttons inside the same container */}
+      <div className="form-buttons">
+        <button type="submit" className="submit-btn">Add</button>
+        <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
+      </div>
+    </form>
+  );
 }
-export default AddLocationForm;

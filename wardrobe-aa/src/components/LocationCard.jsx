@@ -1,9 +1,10 @@
 import { useState } from "react";
 import AddItemForm from "./AddItemForm";
+import PopupManager from "./PopupManager";
 
 function LocationCard({ location, items, onAddItem }) {
   const itemsInLocation = items.filter((i) => i.locationId === location.id);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [showAddItem, setShowAddItem] = useState(false);
 
   return (
     <div className="location-card">
@@ -18,20 +19,16 @@ function LocationCard({ location, items, onAddItem }) {
         ))}
       </ul>
 
-      <button onClick={() => setIsPopupOpen(true)}>+ Add Item</button>
+      <button onClick={() => setShowAddItem(true)}>+ Add Item</button>
 
-      {isPopupOpen && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <h4>Add Item to {location.name}</h4>
-            <AddItemForm
-              locationId={location.id}
-              onAddItem={onAddItem}
-              onClose={() => setIsPopupOpen(false)}
-            />
-          </div>
-        </div>
-      )}
+      <PopupManager isOpen={showAddItem} onClose={()=>setShowAddItem(false)}  title={`Add Item to ${location.name}`}>
+        <AddItemForm 
+          locationId={location.id}
+          onAddItem={onAddItem}
+          onClose={() => setShowAddItem(false)}
+        />
+      </PopupManager>
+    
     </div>
   );
 }
