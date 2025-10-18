@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AddItemForm from "./AddItemForm";
 
-function LocationCard({ location, items, setItems }) {
+function LocationCard({ location, items, onAddItem }) {
   const itemsInLocation = items.filter((i) => i.locationId === location.id);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -26,8 +26,7 @@ function LocationCard({ location, items, setItems }) {
             <h4>Add Item to {location.name}</h4>
             <AddItemForm
               locationId={location.id}
-              items={items}
-              setItems={setItems}
+              onAddItem={onAddItem}
               onClose={() => setIsPopupOpen(false)}
             />
           </div>

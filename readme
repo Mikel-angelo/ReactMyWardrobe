@@ -1,0 +1,5 @@
+uvicorn backend.main:app --reload
+
+cd wardrobe-aa
+npm run dev
+cd ..

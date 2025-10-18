@@ -1,7 +1,9 @@
 // form to add an  item
 import { useState } from "react";
+import { API_ROUTES } from "../config/api";
 
-function AddItemForm({ locationId, items, setItems, onClose }) {
+
+function AddItemForm({ locationId, onAddItem, onClose }) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [season, setSeason] = useState("");
@@ -16,17 +18,12 @@ function AddItemForm({ locationId, items, setItems, onClose }) {
       locationId,
     };
 
+    // delegate server call and state update to parent
     try {
-      const res = await fetch("http://127.0.0.1:8000/items", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newItem),
-      });
-      const added = await res.json();
-      setItems([...items, added]);
-      onClose(); // close popup
+      await onAddItem(newItem);
+      onClose();
     } catch (err) {
-      console.error("Error adding item:", err);
+      console.error("Error adding item via parent handler:", err);
     }
   };
 
