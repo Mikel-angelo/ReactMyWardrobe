@@ -29,19 +29,21 @@ export default function AddLocationForm({ onAddLocation, onClose }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: "1rem" }}>
+    <form onSubmit={handleSubmit} className="space-y-3">
       <input
         type="text"
         value={name}
         placeholder="Add new location (e.g., Top Shelf)"
         onChange={(e) => setName(e.target.value)}
+  className="block w-full border border-neutral-muted rounded-md px-3 py-2 text-sm text-neutral-text"
       />
 
-        <input
+      <input
         type="text"
         value={description}
         placeholder="Description"
         onChange={(e) => setDescription(e.target.value)}
+  className="block w-full border border-neutral-muted rounded-md px-3 py-2 text-sm text-neutral-text"
       />
 
       <input
@@ -49,12 +51,23 @@ export default function AddLocationForm({ onAddLocation, onClose }) {
         value={comments}
         placeholder="Comments"
         onChange={(e) => setComments(e.target.value)}
-      />    
+  className="block w-full border border-neutral-muted rounded-md px-3 py-2 text-sm text-neutral-text"
+      />
 
-      {/* Both buttons inside the same container */}
-      <div className="form-buttons">
-        <button type="submit" className="submit-btn">Add</button>
-        <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          className="px-3 py-1 rounded-md bg-accent-light font-sans text-sm hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed text-neutral-text"
+          onClick={onClose}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+    className="px-3 py-1 rounded-md bg-brand text-white font-sans text-sm hover:bg-brand-dark disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Add
+        </button>
       </div>
     </form>
   );

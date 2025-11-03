@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 
-export default function AddItemForm({ locationId, onAddItem, onClose }) {
+export default function AddItemForm({ location_id, onAddItem, onClose }) {
   // Local state for the input fields
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
@@ -20,7 +20,7 @@ export default function AddItemForm({ locationId, onAddItem, onClose }) {
       name,
       category,
       season,
-      locationId, // tie the item to a specific location
+      location_id, // tie the item to a specific location
     };
 
     // Trigger the parent’s add handler (→ hook → API)
@@ -35,16 +35,15 @@ export default function AddItemForm({ locationId, onAddItem, onClose }) {
     if (onClose) onClose();
   }
 
+  console.log("AddItemForm rendered for location_id:", location_id);
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="add-item-form"
-   >
+    <form onSubmit={handleSubmit} className="space-y-3">
       <input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Item name"
+  className="block w-full border border-neutral-muted rounded-md px-3 py-2 text-sm text-neutral-text"
       />
 
       <input
@@ -52,20 +51,32 @@ export default function AddItemForm({ locationId, onAddItem, onClose }) {
         value={category}
         onChange={(e) => setCategory(e.target.value)}
         placeholder="Category (e.g. T-shirt)"
-         />
+  className="block w-full border border-neutral-muted rounded-md px-3 py-2 text-sm text-neutral-text"
+      />
 
       <input
         type="text"
         value={season}
         onChange={(e) => setSeason(e.target.value)}
         placeholder="Season (e.g. Summer)"
+  className="block w-full border border-neutral-muted rounded-md px-3 py-2 text-sm text-neutral-text"
       />
 
-      <div className="form-buttons">
-        <button type="submit" className="submit-btn">Add</button>
-        <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+    className="px-3 py-1 rounded-md bg-accent-light font-sans text-sm hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed text-neutral-text"
+          onClick={onClose}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-3 py-1 rounded-md bg-brand text-white font-sans text-sm hover:bg-brand-dark disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Add
+        </button>
       </div>
-
     </form>
   );
 }

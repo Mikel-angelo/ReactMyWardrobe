@@ -1,21 +1,11 @@
-/* Center align the top section (App title + Add Location button) */
-.app-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.app-header h1 {
-  margin-bottom: 1rem;
-}
-
-/* For the main wardrobe grid */
-.wardrobe-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
+@layer components {
+  .page-container {
+    @apply max-w-6xl mx-auto p-6;
+  }
+  .sidebar {
+    @apply w-64 border-r bg-neutral-bg h-screen sticky top-0;
+  }
+  .navbar {
+    @apply w-full flex items-center justify-between p-4 border-b bg-neutral-bg shadow-sm;
+  }
 }

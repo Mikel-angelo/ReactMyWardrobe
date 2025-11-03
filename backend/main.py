@@ -1,7 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from backend.routers.items import router as items_router
+from backend.routers.locations import router as locations_router
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="backend/static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -11,33 +18,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-locations = [
-    {"id": 1, "name": "Top Shelf", "description": "Sweaters and hats"},
-    {"id": 2, "name": "Drawer 1", "description": "T-shirts and pants"},
-]
+# Register routers here
+app.include_router(items_router, prefix="/api")
+app.include_router(locations_router, prefix="/api")
 
-items = [
-    { "id": 1, "name": "Blue Jeans", "category": "Pants", "season": "All-year", "locationId": 2 },
-    { "id": 2, "name": "White Shirt", "category": "Top", "season": "Summer", "locationId": 2 },
-    { "id": 3, "name": "Wool Sweater", "category": "Sweater", "season": "Winter", "locationId": 1 }
-]
+@app.get("/")
+def root():
+    return {"message": "My Wardrobe API is running","See more":"Visit http://localhost:5173/ !"}
 
-@app.get("/locations")
-def get_locations():
-    return locations
-
-@app.post("/locations")
-def add_location(location: dict):
-    location["id"] = max([l["id"] for l in locations]) + 1 if locations else 1
-    locations.append(location)
-    return location
-
-@app.get("/items")
-def get_items():
-    return items
-
-@app.post("/items")
-def add_item(item: dict):
-    item["id"] = max([i["id"] for i in items]) + 1 if items else 1
-    items.append(item)
-    return item
+# Serve favicon.ico when the browser requests it
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse(os.path.join("backend", "static", "favicon.ico"))

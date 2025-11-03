@@ -3,53 +3,27 @@
 // App acts as the "conductor" – it doesn’t handle data logic directly.
 
 import { useState } from "react";
-import { useItems } from "./hooks/useItems";
-import { useLocations } from "./hooks/useLocations";
-import LocationCard from "./components/LocationCard";
-import AddLocationForm from "./components/AddLocationForm";
-import PopupManager from "./components/PopupManager";
+import TopNav from "./components/TopNav";
+import WardrobeMode from "./pages/WardrobeMode";
+import InventoryMode from "./pages/InventoryMode";
+import "./index.css"; // <-- THIS MUST EXIST
+
 
 export default function App() {
-  // Import data + actions from our custom hooks
-  const { items, handleAddItem } = useItems();
-  const { locations, handleAddLocation, loading, error } = useLocations();
-  
-   // Local UI state for controlling the modal
-  const [showAddLocation, setShowAddLocation] = useState(false);
+  const [page, setPage] = useState("wardrobe"); // "wardrobe" | "inventory"
 
-  // --- Basic UX handling ---
-  if (loading) return <p>Loading wardrobe...</p>;
-  if (error) return <p style={{ color: "red" }}>Error: {error.message}</p>;
-
-  // --- Render UI ---
   return (
-    <div className="container">
-      <div className="app-header">
-      <h1>👕 My Wardrobe</h1>
+    <div className="min-h-screen flex flex-col bg-neutral-bg">
 
-        {/* Add new wardrobe section button */}
-        <button onClick={() => setShowAddLocation(true)}>+ Add Location</button>
-      </div>
+      <TopNav currentPage={page} onChange={setPage} />
 
-      {/* The popup itself */}
-      <PopupManager isOpen={showAddLocation} onClose={() => setShowAddLocation(false)} title="Add New Location">
-        <AddLocationForm
-          onAddLocation={handleAddLocation}
-          onClose={() => setShowAddLocation(false)} 
-        />
-      </PopupManager>
-
-      {/* Render one card per location */}
-      <div className="wardrobe-grid">
-        {locations.map((loc) => (
-          <LocationCard
-            key={loc.id}
-            location={loc}
-            items={items}
-            onAddItem={handleAddItem}
-          />
-        ))}
-      </div>
+      <main className="flex-1 p-6">
+        {page === "wardrobe" ? (
+          <WardrobeMode />
+        ) : (
+          <InventoryMode />
+        )}
+      </main>
     </div>
   );
 }
