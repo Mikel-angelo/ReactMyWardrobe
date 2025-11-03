@@ -3,7 +3,13 @@ import AddItemForm from "./AddItemForm";
 import PopupManager from "./PopupManager";
 
 function LocationCard({ location, items, onAddItem }) {
-  const itemsInLocation = items.filter((i) => i.locationId === location.id);
+  // support different API shapes: some responses use snake_case (location_id),
+  // some use camelCase (locationId), and some may nest the location object.
+  const itemsInLocation = items.filter((i) => {
+    const locId = i.locationId ?? i.location_id ?? i.location?.id;
+    // normalize to numbers/strings for safe comparison
+    return String(locId) === String(location.id);
+  });
   const [showAddItem, setShowAddItem] = useState(false);
 
   return (
@@ -21,14 +27,14 @@ function LocationCard({ location, items, onAddItem }) {
         </button>
       </div>
 
-  <ul className="mt-3 list-disc pl-5 text-sm text-neutral-text">
+    <ul className="mt-3 list-disc pl-5 text-sm text-neutral-text">
         {itemsInLocation.map((item) => (
           <li key={item.id} className="mb-1">
             <span className="font-medium">{item.name}</span>
-            <span className="text-neutral-text"> {item.category ? `· ${item.category}` : "(no category)"}</span>
+            <span className="text-neutral-text"> {item.category?.name || item.category || "(no category)"}</span>
           </li>
         ))}
-      </ul>
+    </ul>
 
       <PopupManager isOpen={showAddItem} onClose={() => setShowAddItem(false)} title={`Add Item to ${location.name}`}>
         <AddItemForm location_id={location.id} onAddItem={onAddItem} onClose={() => setShowAddItem(false)} />
