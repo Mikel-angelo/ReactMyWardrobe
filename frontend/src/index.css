@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 30 10% 15%;
+
+    --card: 40 15% 96%;
+    --card-foreground: 30 10% 15%;
+
+    --popover: 40 20% 98%;
+    --popover-foreground: 30 10% 15%;
+
+    --primary: 180 25% 35%;
+    --primary-foreground: 40 20% 98%;
+
+    --secondary: 40 10% 92%;
+    --secondary-foreground: 30 10% 25%;
+
+    --muted: 40 10% 90%;
+    --muted-foreground: 30 8% 45%;
+
+    --accent: 180 20% 90%;
+    --accent-foreground: 180 25% 25%;
+
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 12% 88%;
+    --input: 40 12% 88%;
+    --ring: 180 25% 35%;
+
+    --radius: 0.25rem;
+
+    --sidebar-background: 40 15% 96%;
+    --sidebar-foreground: 30 10% 25%;
+    --sidebar-primary: 180 25% 35%;
+    --sidebar-primary-foreground: 40 20% 98%;
+    --sidebar-accent: 40 10% 92%;
+    --sidebar-accent-foreground: 30 10% 25%;
+    --sidebar-border: 40 12% 88%;
+    --sidebar-ring: 180 25% 35%;
+
+    /* Custom tokens */
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Inter', system-ui, sans-serif;
+    
+    --success: 150 40% 40%;
+    --success-foreground: 150 40% 98%;
+    
+    --warning: 35 80% 50%;
+    --warning-foreground: 35 80% 10%;
+  }
+
+  .dark {
+    --background: 30 10% 10%;
+    --foreground: 40 15% 92%;
+
+    --card: 30 10% 12%;
+    --card-foreground: 40 15% 92%;
+
+    --popover: 30 10% 12%;
+    --popover-foreground: 40 15% 92%;
+
+    --primary: 180 30% 50%;
+    --primary-foreground: 30 10% 10%;
+
+    --secondary: 30 8% 18%;
+    --secondary-foreground: 40 15% 85%;
+
+    --muted: 30 8% 20%;
+    --muted-foreground: 40 10% 55%;
+
+    --accent: 180 20% 20%;
+    --accent-foreground: 180 30% 70%;
+
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 8% 22%;
+    --input: 30 8% 22%;
+    --ring: 180 30% 50%;
+
+    --sidebar-background: 30 10% 12%;
+    --sidebar-foreground: 40 15% 85%;
+    --sidebar-primary: 180 30% 50%;
+    --sidebar-primary-foreground: 30 10% 10%;
+    --sidebar-accent: 30 8% 18%;
+    --sidebar-accent-foreground: 40 15% 85%;
+    --sidebar-border: 30 8% 22%;
+    --sidebar-ring: 180 30% 50%;
+
+    --success: 150 35% 45%;
+    --success-foreground: 150 35% 95%;
+    
+    --warning: 35 70% 45%;
+    --warning-foreground: 35 70% 95%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  code, .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+@layer components {
+  .dense-text {
+    @apply text-sm leading-tight tracking-tight;
+  }
+
+  .label-mono {
+    font-family: var(--font-mono);
+    @apply text-xs uppercase tracking-wider text-muted-foreground;
+  }
+
+  .count-badge {
+    font-family: var(--font-mono);
+    @apply text-xs px-1.5 py-0.5 bg-muted rounded text-muted-foreground;
+  }
+}

@@ -38,6 +38,7 @@ python -m backend.database.init_db
 4. Start the backend server (from project root):
 
 ```powershell
+.\backend\venv\Scripts\Activate.ps1
 uvicorn backend.main:app --reload
 # or, if you prefer to run from the backend folder:
 # cd backend; & .\venv\Scripts\Activate.ps1; uvicorn main:app --reload
@@ -49,7 +50,7 @@ Frontend (React/Vite)
 1. Change to the frontend folder and install dependencies:
 
 ```powershell
-cd wardrobe-aa
+cd frontend
 npm install
 ```
 

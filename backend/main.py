@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routers.items import router as items_router
 from backend.routers.locations import router as locations_router
+from backend.routers.categories import router as categories_router
+from backend.routers import categories
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
@@ -21,6 +23,7 @@ app.add_middleware(
 # Register routers here
 app.include_router(items_router, prefix="/api")
 app.include_router(locations_router, prefix="/api")
+app.include_router(categories_router, prefix="/api")
 
 @app.get("/")
 def root():
