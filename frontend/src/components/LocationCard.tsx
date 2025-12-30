@@ -56,7 +56,7 @@ export function LocationCard({
   // Empty state: no items in this location
   if (categoryGroups.length === 0) {
     return (
-      <div className="h-full flex flex-col overflow-hidden border border-border rounded bg-card p-3">
+      <div className="p-3 h-full">
         {/* HEADER */}
         <div className="flex items-center justify-between gap-2 flex-shrink-0">
           <button
@@ -81,8 +81,8 @@ export function LocationCard({
     );
   }
 
-  return (
-    <div className="h-full flex flex-col overflow-hidden border border-border rounded bg-card">
+  return (    
+    <div className="h-full flex flex-col">
       {/* HEADER (NEVER SHRINKS) */}
       <div className="flex items-center gap-2 p-3 border-b border-border flex-shrink-0">
         <button
@@ -101,7 +101,7 @@ export function LocationCard({
       </div>
 
       {/* SCROLLABLE CONTENT */}
-      <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-border">
+      <div className="flex-1 overflow-auto divide-y divide-border">
         {categoryGroups.map(({ category, items: categoryItems }) => {
           const isExpanded = expandedCategories.has(category.id);
 

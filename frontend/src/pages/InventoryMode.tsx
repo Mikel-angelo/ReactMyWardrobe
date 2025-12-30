@@ -2,16 +2,19 @@ import type { Item, Category, Location } from "@/types/index";
 
 import { CategoriesTable } from "@/components/CategoriesTable";
 import { ItemsTable } from "@/components/ItemsTable";
+import { LocationsTable } from "@/components/LocationsTable";
 
 interface InventoryModeProps {
   items: Item[];
   categories: Category[];
   locations: Location[];
   onItemClick: (item: Item) => void;
-  view: "items" | "categories";
-  onViewChange: (view: "items" | "categories") => void;
+  onLocationClick: (location: Location) => void;
+  view: "items" | "categories" | "locations";
+  onViewChange: (view: "items" | "categories" | "locations") => void;
   onDeleteItem: (id: number) => void;
   onDeleteCategory: (id: number) => void;
+  onDeleteLocation: (id: number) => void;
   categoryItemCounts: Record<number, number>;
   onCategoryClick: (category: Category) => void;
 }
@@ -21,10 +24,12 @@ export function InventoryMode({
   categories,
   locations,
   onItemClick,
+  onLocationClick,
   view,
   onViewChange,
   onDeleteItem,
   onDeleteCategory,
+  onDeleteLocation,
   categoryItemCounts,
   onCategoryClick,
 }: InventoryModeProps) {
@@ -34,13 +39,13 @@ export function InventoryMode({
         <div className="inline-flex border border-border rounded-md overflow-hidden">
           <button
             className={`px-3 py-1.5 text-sm ${
-              view === "items"
+              view === "locations"
                 ? "bg-primary text-primary-foreground"
                 : "bg-background text-foreground hover:bg-muted/50"
             }`}
-            onClick={() => onViewChange("items")}
+            onClick={() => onViewChange("locations")}
           >
-            Items
+            Locations
           </button>
           <button
             className={`px-3 py-1.5 text-sm border-l border-border ${
@@ -52,6 +57,16 @@ export function InventoryMode({
           >
             Categories
           </button>
+          <button
+            className={`px-3 py-1.5 text-sm border-l border-border ${
+              view === "items"
+                ? "bg-primary text-primary-foreground"
+                : "bg-background text-foreground hover:bg-muted/50"
+            }`}
+            onClick={() => onViewChange("items")}
+          >
+            Items
+          </button>
         </div>
       </div>
 
@@ -61,6 +76,12 @@ export function InventoryMode({
           itemCounts={categoryItemCounts}
           onDeleteCategory={onDeleteCategory}
           onCategoryClick={onCategoryClick}
+        />
+      ) : view === "locations" ? (
+        <LocationsTable
+          locations={locations}
+          onDeleteLocation={onDeleteLocation}
+          onLocationClick={onLocationClick}
         />
       ) : (
         <ItemsTable

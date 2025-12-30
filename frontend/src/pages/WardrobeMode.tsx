@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react";
 import type { Location, Category, Item } from "@/types";
-import { LocationsGrid } from "@/components/LocationsGrid";
 import { LocationCard } from "@/components/LocationCard";
-import { computeMinGridSize } from "@/lib/gridSizing";
-
+import { ResizableGrid } from "@/components/ResizableGrid";
+import type { GridCardState } from "@/components/ResizableGrid";
 
 interface WardrobeModeProps {
   locations: Location[];
@@ -13,6 +13,18 @@ interface WardrobeModeProps {
   onLocationClick: (location: Location) => void;
 }
 
+const STORAGE_KEY = "wardrobe-grid-layout";
+
+/* ---------- default layout ---------- */
+function createDefaultCardState(id: number, index: number): GridCardState {
+  return {
+    id,
+    columnStart: (index % 3) * 4 + 1, // 3 cards per row
+    columnSpan: 4,
+    heightPx: 300,
+  };
+}
+
 export function WardrobeMode({
   locations,
   categories,
@@ -21,21 +33,100 @@ export function WardrobeMode({
   onAddItem,
   onLocationClick,
 }: WardrobeModeProps) {
+  /* ---------- unassigned ---------- */
   const unassignedItems = items.filter((i) => !i.location_id);
 
-  const locationsWithUnassigned: Location[] = [
-    ...locations,
-    ...(unassignedItems.length > 0
-      ? [{ id: -1, name: "Unassigned" } as Location]
-      : []),
+  const allCardIds = [
+    ...locations.map((l) => l.id),
+    ...(unassignedItems.length > 0 ? [-1] : []),
   ];
 
-  const cards: Record<number, React.ReactNode> = {};
+  /* ---------- layout state ---------- */
+  const [cardStates, setCardStates] = useState<GridCardState[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as GridCardState[];
+        return allCardIds.map(
+          (id, index) =>
+            parsed.find((s) => s.id === id) ??
+            createDefaultCardState(id, index)
+        );
+      } catch {
+        /* ignore */
+      }
+    }
+    return allCardIds.map((id, index) =>
+      createDefaultCardState(id, index)
+    );
+  });
 
-  /* ---------- normal locations ---------- */
-  locations.forEach((location) => {
-    cards[location.id] = (
+  /* ---------- keep layout in sync ---------- */
+  useEffect(() => {
+    setCardStates((prev) =>
+      allCardIds.map(
+        (id, index) =>
+          prev.find((s) => s.id === id) ??
+          createDefaultCardState(id, index)
+      )
+    );
+  }, [locations.length, unassignedItems.length]);
+
+  /* ---------- persist ---------- */
+  const handleCardStatesChange = (next: GridCardState[]) => {
+    setCardStates(next);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  };
+
+  /* ---------- build cards ---------- */
+  const children = cardStates.map((state) => {
+    /* ----- unassigned card ----- */
+    if (state.id === -1) {
+      return (
+        <div
+          key="unassigned"
+          className="border border-dashed border-border rounded bg-card/50 p-3 h-full"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-medium text-sm text-muted-foreground">
+              Unassigned
+            </span>
+            <span className="count-badge">{unassignedItems.length}</span>
+          </div>
+
+          <div className="space-y-1">
+            {unassignedItems.map((item) => {
+              const category = categories.find(
+                (c) => c.id === item.category_id
+              );
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onItemClick(item)}
+                  className="w-full text-left px-2 py-1 text-sm hover:bg-muted/50 rounded flex items-center justify-between"
+                >
+                  <span className="dense-text">{item.name}</span>
+                  {category && (
+                    <span className="text-xs text-muted-foreground">
+                      {category.name}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ----- normal location card ----- */
+    const location = locations.find((l) => l.id === state.id);
+    if (!location) return null;
+
+    return (
       <LocationCard
+        key={location.id}
         location={location}
         categories={categories}
         items={items}
@@ -46,65 +137,12 @@ export function WardrobeMode({
     );
   });
 
-  /* ---------- unassigned card ---------- */
-  if (unassignedItems.length > 0) {
-    cards[-1] = (
-      <div className="border border-dashed border-border rounded bg-card/50 p-3 h-full">
-        <div className="flex items-center justify-between mb-2">
-          <span className="font-medium text-sm text-muted-foreground">
-            Unassigned
-          </span>
-          <span className="count-badge">{unassignedItems.length}</span>
-        </div>
-
-        <div className="space-y-1">
-          {unassignedItems.map((item) => {
-            const category = categories.find(
-              (c) => c.id === item.category_id
-            );
-
-            return (
-              <button
-                key={item.id}
-                onClick={() => onItemClick(item)}
-                className="w-full text-left px-2 py-1 text-sm hover:bg-muted/50 rounded flex items-center justify-between"
-              >
-                <span className="dense-text">{item.name}</span>
-                {category && (
-                  <span className="text-xs text-muted-foreground">
-                    {category.name}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  const locationMeta: Record<number, { minH: number; minW: number }> = {};
-
-  locations.forEach((location) => {
-    const locationItems = items.filter(
-      (i) => i.location_id === location.id
-    );
-
-    const categoriesInLocation = categories.filter((c) =>
-      locationItems.some((i) => i.category_id === c.id)
-    );
-
-    locationMeta[location.id] = computeMinGridSize({
-      categoryCount: categoriesInLocation.length,
-      itemCount: locationItems.length,
-    });
-  });
-
   return (
-    <LocationsGrid
-      locations={locationsWithUnassigned}
-      cards={cards}
-      meta={locationMeta}
-    />
+    <ResizableGrid
+      cardStates={cardStates}
+      onCardStatesChange={handleCardStatesChange}
+    >
+      {children}
+    </ResizableGrid>
   );
 }

@@ -28,7 +28,7 @@ import {
 import type { Item, ItemCreate, Location, LocationUpdate, Category, CategoryUpdate } from "@/types/index";
 
 type Mode = "wardrobe" | "inventory";
-type InventoryView = "items" | "categories";
+type InventoryView = "items" | "categories" | "locations";
 
 export default function App() {
   const [mode, setMode] = useState<Mode>("wardrobe");
@@ -175,7 +175,10 @@ export default function App() {
         onAddItem={() => handleAddItem()}
         onAddLocation={() => setAddLocationOpen(true)}
         onAddCategory={() => setAddCategoryOpen(true)}
-        onViewLocations={() => setMode("wardrobe")}
+        onViewLocations={() => {
+          setMode("inventory");
+          setInventoryView("locations");
+        }}
         onViewCategories={() => {
           setMode("inventory");
           setInventoryView("categories");
@@ -207,10 +210,12 @@ export default function App() {
           categories={categories}
           locations={locations}
           onItemClick={handleItemClick}
+          onLocationClick={handleLocationClick}
           view={inventoryView}
           onViewChange={setInventoryView}
           onDeleteItem={(id) => deleteItem.mutate(id)}
           onDeleteCategory={(id) => deleteCategory.mutate(id)}
+          onDeleteLocation={(id) => deleteLocation.mutate(id)}
           categoryItemCounts={categoryItemCounts}
           onCategoryClick={handleCategoryClick}
         />
