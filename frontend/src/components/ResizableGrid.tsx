@@ -335,7 +335,7 @@ function GridCard({
           h-full
           ${isEditMode ? 'pl-6' : ''}
           ${needsScroll ? 'overflow-auto' : 'overflow-hidden'}
-          ${isEditMode ? 'select-none' : ''}
+          ${isEditMode ? 'pointer-events-none select-none' : ''}
         `}
       >
         {children}
