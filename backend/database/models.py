@@ -118,3 +118,9 @@ class Item(Base):
         secondary=item_tags,
         back_populates="items",
     )
+
+class AppMeta(Base):
+    __tablename__ = "app_meta"
+
+    key = Column(String, primary_key=True)
+    value = Column(String)
