@@ -7,8 +7,12 @@ from backend.routers import categories
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
+from backend.database.database import engine , Base
+from backend.database.seed import seed_database
 
 app = FastAPI()
+Base.metadata.create_all(bind=engine)
+seed_database()
 
 app.mount("/static", StaticFiles(directory="backend/static"), name="static")
 
