@@ -123,31 +123,37 @@ export function LocationCard({
               </button>
 
               {isExpanded && (
-                <div className="bg-muted/30 border-t border-border">
-                  {categoryItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => onItemClick(item)}
-                      className="w-full text-left px-6 py-1.5 text-sm hover:bg-muted/50 flex items-center justify-between group"
-                    >
-                      <span className="dense-text">{item.name}</span>
-                      {item.color && (
-                        <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100">
-                          {item.color}
-                        </span>
-                      )}
-                    </button>
-                  ))}
+                <div className="bg-muted/30 border-t border-border px-4 py-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {categoryItems.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => onItemClick(item)}
+                        className="
+                          inline-flex items-center justify-center
+                          rounded-lg border border-border
+                          bg-background/90
+                          px-2.5 py-1.5
+                          text-xs font-medium
+                          hover:bg-muted
+                          transition
+                        "
+                      >
+                        {item.name}
+                      </button>
+                    ))}
+                  </div>
 
                   <button
                     onClick={() => onAddItem(location.id, category.id)}
-                    className="w-full text-left px-6 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 flex items-center gap-1"
+                    className="mt-3 w-full text-left px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 flex items-center gap-1 rounded"
                   >
                     <Plus className="w-3 h-3" />
                     Add in {category.name}
                   </button>
                 </div>
               )}
+
             </div>
           );
         })}

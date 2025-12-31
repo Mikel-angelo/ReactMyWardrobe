@@ -1,7 +1,7 @@
 import type { Item, Category, Location } from "@/types/index";
 
 import { CategoriesTable } from "@/components/CategoriesTable";
-import { ItemsTable } from "@/components/ItemsTable";
+import { ItemsTableSection } from "@/components/ItemsTableSection";
 import { LocationsTable } from "@/components/LocationsTable";
 
 interface InventoryModeProps {
@@ -84,7 +84,7 @@ export function InventoryMode({
           onLocationClick={onLocationClick}
         />
       ) : (
-        <ItemsTable
+        <ItemsTableSection
           items={items}
           categories={categories}
           locations={locations}

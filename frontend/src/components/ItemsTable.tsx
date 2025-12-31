@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Star, Trash } from "lucide-react";
 import type { Item, Category, Location } from "@/types/index";
+import type { SortField, SortDirection } from "@/hooks/useItemsTable";
 
 import {
   Table,
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,12 +25,15 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-type Props = {
+export type ItemsTableProps = {
   items: Item[];
   categories: Category[];
   locations: Location[];
   onItemClick: (item: Item) => void;
   onDeleteItem: (id: number) => void;
+  sortField?: SortField | null;
+  sortDirection?: SortDirection;
+  onSort?: (field: SortField) => void;
 };
 
 export function ItemsTable({
@@ -37,7 +42,10 @@ export function ItemsTable({
   locations,
   onItemClick,
   onDeleteItem,
-}: Props) {
+  sortField,
+  sortDirection,
+  onSort,
+}: ItemsTableProps) {
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const getCategoryName = (id: number) =>
@@ -66,19 +74,61 @@ export function ItemsTable({
 
   const pendingDelete = items.find((i) => i.id === deleteId) || null;
 
+  const renderSortableHead = (label: string, field: SortField) => {
+    if (!onSort) return <>{label}</>;
+    const active = sortField === field && sortDirection;
+    const isAsc = active && sortDirection === "asc";
+    const isDesc = active && sortDirection === "desc";
+
+    return (
+      <button
+        type="button"
+        className="flex items-center gap-1"
+        onClick={() => onSort(field)}
+      >
+        <span>{label}</span>
+        <span
+          className={cn(
+            "text-[10px] leading-none",
+            active ? "text-foreground" : "text-muted-foreground",
+          )}
+        >
+          <span className={isAsc ? "font-semibold" : "opacity-60"}>↑</span>
+          <span className={isDesc ? "font-semibold" : "opacity-60"}>↓</span>
+        </span>
+      </button>
+    );
+  };
+
   return (
     <div className="border border-border rounded overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead className="label-mono py-2">Name</TableHead>
-            <TableHead className="label-mono py-2">Category</TableHead>
-            <TableHead className="label-mono py-2">Color</TableHead>
-            <TableHead className="label-mono py-2">Fit</TableHead>
-            <TableHead className="label-mono py-2">Brand</TableHead>
-            <TableHead className="label-mono py-2">Season</TableHead>
-            <TableHead className="label-mono py-2">Location</TableHead>
-            <TableHead className="label-mono py-2">Rating</TableHead>
+            <TableHead className="label-mono py-2">
+              {renderSortableHead("Name", "name")}
+            </TableHead>
+            <TableHead className="label-mono py-2">
+              {renderSortableHead("Category", "category")}
+            </TableHead>
+            <TableHead className="label-mono py-2">
+              {renderSortableHead("Color", "color")}
+            </TableHead>
+            <TableHead className="label-mono py-2">
+              {renderSortableHead("Fit", "fit")}
+            </TableHead>
+            <TableHead className="label-mono py-2">
+              {renderSortableHead("Brand", "brand")}
+            </TableHead>
+            <TableHead className="label-mono py-2">
+              {renderSortableHead("Season", "season")}
+            </TableHead>
+            <TableHead className="label-mono py-2">
+              {renderSortableHead("Location", "location")}
+            </TableHead>
+            <TableHead className="label-mono py-2">
+              {renderSortableHead("Rating", "rating")}
+            </TableHead>
             <TableHead className="label-mono py-2">Use</TableHead>
             <TableHead className="label-mono py-2">Notes</TableHead>
             <TableHead className="label-mono py-2 text-right" />
@@ -124,10 +174,22 @@ export function ItemsTable({
                 {renderRating(item.rating)}
               </TableCell>
 
-              <TableCell className="py-1.5 dense-text text-muted-foreground max-w-[100px] truncate">
-                {item.tags.length > 0
-                  ? item.tags.map((t) => t.name).join(", ")
-                  : "—"}
+              <TableCell className="py-1.5">
+                {item.tags.length > 0 ? (
+                  <div className="flex flex-wrap gap-1">
+                    {item.tags.map((tag) => (
+                      <Badge
+                        key={tag.id}
+                        variant="secondary"
+                        className="text-xs py-0 h-5"
+                      >
+                        {tag.name}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
               </TableCell>
 
               <TableCell className="py-1.5 dense-text text-muted-foreground max-w-[120px] truncate">
