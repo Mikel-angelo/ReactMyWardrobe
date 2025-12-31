@@ -1,4 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "@/hooks/use-toast";
+
 import { categoriesApi } from "@/api/categories";
 import { itemsApi } from "@/api/items";
 import { locationsApi } from "@/api/locations";
@@ -11,7 +13,7 @@ import type {
   CategoryCreate,
   CategoryUpdate,
 } from "@/types/index";
-import { toast } from "@/hooks/use-toast";
+
 
 // --------------------
 // Queries

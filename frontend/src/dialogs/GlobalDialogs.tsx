@@ -1,5 +1,4 @@
 import type {
-  Item,
   ItemCreate,
   Location,
   LocationUpdate,
@@ -7,6 +6,9 @@ import type {
   LocationCreate,
   CategoryCreate,
 } from "@/types/index";
+import type { ItemDialogs } from "@/hooks/useItemDialogs";
+import type { LocationDialogs } from "@/hooks/useLocationDialogs";
+import type { CategoryDialogs } from "@/hooks/useCategoryDialogs";
 
 import { ItemCard } from "@/components/ItemCard";
 import { LocationDetailsDialog } from "@/components/LocationDetailsDialog";
@@ -17,20 +19,12 @@ import { AddCategoryForm } from "@/components/AddCategoryForm";
 import { DeleteConfirmDialog } from "@/components/DeleteConfirmDialog";
 
 type Props = {
-  // Item card
-  selectedItem: Item | null;
-  itemCardOpen: boolean;
-  setItemCardOpen: (open: boolean) => void;
-  onEditItem: (item: Item) => void;
-  onDeleteItem: (item: Item) => void;
-
-  // Add / edit item
-  addItemOpen: boolean;
-  setAddItemOpen: (open: boolean) => void;
+  // Item dialogs
+  itemDialogs: ItemDialogs;
   onSubmitItem: (data: ItemCreate, editId?: number) => void;
-  editItem: Item | null;
-  presetLocationId?: number;
-  presetCategoryId?: number;
+  onConfirmDelete: () => void;
+  locationDialogs: LocationDialogs;
+  categoryDialogs: CategoryDialogs;
 
   // Add location
   addLocationOpen: boolean;
@@ -42,28 +36,12 @@ type Props = {
   setAddCategoryOpen: (open: boolean) => void;
   onCreateCategory: (data: CategoryCreate) => void;
 
-  // Delete confirm
-  deleteDialogOpen: boolean;
-  setDeleteDialogOpen: (open: boolean) => void;
-  itemToDelete: Item | null;
-  onConfirmDelete: () => void;
-
   // Location details / edit / delete
-  selectedLocation: Location | null;
-  locationDialogOpen: boolean;
-  setLocationDialogOpen: (open: boolean) => void;
   onUpdateLocation: (id: number, data: LocationUpdate) => void;
-  onRequestDeleteLocation: (location: Location) => void;
   locationItemCounts: Record<number, number>;
-  locationDeleteDialogOpen: boolean;
-  setLocationDeleteDialogOpen: (open: boolean) => void;
-  locationToDelete: Location | null;
   onConfirmDeleteLocation: () => void;
 
   // Category details
-  selectedCategory: Category | null;
-  categoryDialogOpen: boolean;
-  setCategoryDialogOpen: (open: boolean) => void;
   categoryItemCounts: Record<number, number>;
   onDeleteCategory: (category: Category) => void;
   onUpdateCategory: (id: number, data: { name?: string; comments?: string }) => void;
@@ -74,18 +52,11 @@ type Props = {
 };
 
 export function GlobalDialogs({
-  selectedItem,
-  itemCardOpen,
-  setItemCardOpen,
-  onEditItem,
-  onDeleteItem,
-
-  addItemOpen,
-  setAddItemOpen,
+  itemDialogs,
   onSubmitItem,
-  editItem,
-  presetLocationId,
-  presetCategoryId,
+  onConfirmDelete,
+  locationDialogs,
+  categoryDialogs,
 
   addLocationOpen,
   setAddLocationOpen,
@@ -95,25 +66,10 @@ export function GlobalDialogs({
   setAddCategoryOpen,
   onCreateCategory,
 
-  deleteDialogOpen,
-  setDeleteDialogOpen,
-  itemToDelete,
-  onConfirmDelete,
-
-  selectedLocation,
-  locationDialogOpen,
-  setLocationDialogOpen,
   onUpdateLocation,
-  onRequestDeleteLocation,
   locationItemCounts,
-  locationDeleteDialogOpen,
-  setLocationDeleteDialogOpen,
-  locationToDelete,
   onConfirmDeleteLocation,
 
-  selectedCategory,
-  categoryDialogOpen,
-  setCategoryDialogOpen,
   categoryItemCounts,
   onDeleteCategory,
   onUpdateCategory,
@@ -124,24 +80,24 @@ export function GlobalDialogs({
   return (
     <>
       <ItemCard
-        item={selectedItem}
+        item={itemDialogs.selectedItem}
         categories={categories}
         locations={locations}
-        open={itemCardOpen}
-        onClose={() => setItemCardOpen(false)}
-        onEdit={onEditItem}
-        onDelete={onDeleteItem}
+        open={itemDialogs.itemCardOpen}
+        onClose={itemDialogs.closeItemDetails}
+        onEdit={itemDialogs.editExistingItem}
+        onDelete={itemDialogs.requestDelete}
       />
 
       <AddItemForm
-        open={addItemOpen}
-        onClose={() => setAddItemOpen(false)}
+        open={itemDialogs.addItemOpen}
+        onClose={itemDialogs.closeAddItem}
         onSubmit={onSubmitItem}
         categories={categories}
         locations={locations}
-        presetLocationId={presetLocationId}
-        presetCategoryId={presetCategoryId}
-        editItem={editItem}
+        presetLocationId={itemDialogs.presetLocationId}
+        presetCategoryId={itemDialogs.presetCategoryId}
+        editItem={itemDialogs.editItem}
       />
 
       <AddLocationForm
@@ -159,39 +115,41 @@ export function GlobalDialogs({
 
 
       <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
+        open={itemDialogs.deleteDialogOpen}
+        onClose={itemDialogs.clearDeleteRequest}
         onConfirm={onConfirmDelete}
-        itemName={itemToDelete?.name || ""}
+        itemName={itemDialogs.itemToDelete?.name || ""}
       />
 
       <LocationDetailsDialog
-        open={locationDialogOpen}
-        location={selectedLocation}
+        open={locationDialogs.locationDialogOpen}
+        location={locationDialogs.selectedLocation}
         itemCount={
-          selectedLocation
-            ? locationItemCounts[selectedLocation.id] || 0
+          locationDialogs.selectedLocation
+            ? locationItemCounts[locationDialogs.selectedLocation.id] || 0
             : 0
         }
-        onClose={() => setLocationDialogOpen(false)}
+        onClose={locationDialogs.closeLocationDetails}
         onSubmit={onUpdateLocation}
-        onDeleteRequest={onRequestDeleteLocation}
+        onDeleteRequest={locationDialogs.requestDelete}
       />
 
       <DeleteConfirmDialog
-        open={locationDeleteDialogOpen}
-        onClose={() => setLocationDeleteDialogOpen(false)}
+        open={locationDialogs.locationDeleteDialogOpen}
+        onClose={locationDialogs.clearDeleteRequest}
         onConfirm={onConfirmDeleteLocation}
-        itemName={locationToDelete?.name || ""}
+        itemName={locationDialogs.locationToDelete?.name || ""}
       />
 
       <CategoryCard
-        category={selectedCategory}
+        category={categoryDialogs.selectedCategory}
         itemCount={
-          selectedCategory ? categoryItemCounts[selectedCategory.id] || 0 : 0
+          categoryDialogs.selectedCategory
+            ? categoryItemCounts[categoryDialogs.selectedCategory.id] || 0
+            : 0
         }
-        open={categoryDialogOpen}
-        onClose={() => setCategoryDialogOpen(false)}
+        open={categoryDialogs.categoryDialogOpen}
+        onClose={categoryDialogs.closeCategoryDialog}
         onDelete={onDeleteCategory}
         onSubmit={onUpdateCategory}
       />

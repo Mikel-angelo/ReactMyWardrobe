@@ -24,6 +24,9 @@ import {
   useUpdateCategory,
   useDeleteCategory,
 } from "@/hooks/useWardrobe";
+import { useItemDialogs } from "@/hooks/useItemDialogs";
+import { useLocationDialogs } from "@/hooks/useLocationDialogs";
+import { useCategoryDialogs } from "@/hooks/useCategoryDialogs";
 
 import type { Item, ItemCreate, Location, LocationUpdate, Category, CategoryUpdate } from "@/types/index";
 
@@ -51,57 +54,28 @@ export default function App() {
   const isLoading = itemsLoading || locationsLoading || categoriesLoading;
   const [inventoryView, setInventoryView] = useState<InventoryView>("items");
 
+  const itemDialogs = useItemDialogs();
+  const locationDialogs = useLocationDialogs();
+  const categoryDialogs = useCategoryDialogs();
+
   // dialog + UI state
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-  const [itemCardOpen, setItemCardOpen] = useState(false);
-  const [addItemOpen, setAddItemOpen] = useState(false);
   const [addLocationOpen, setAddLocationOpen] = useState(false);
   const [addCategoryOpen, setAddCategoryOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<Item | null>(null);
-  const [editItem, setEditItem] = useState<Item | null>(null);
-
-  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-  const [locationDeleteDialogOpen, setLocationDeleteDialogOpen] = useState(false);
-  const [locationToDelete, setLocationToDelete] = useState<Location | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
-
-  const [presetLocationId, setPresetLocationId] = useState<number | undefined>();
-  const [presetCategoryId, setPresetCategoryId] = useState<number | undefined>();
 
   // handlers
   const handleItemClick = (item: Item) => {
-    setSelectedItem(item);
-    setItemCardOpen(true);
+    itemDialogs.openItemDetails(item);
   };
 
   const handleAddItem = (locationId?: number, categoryId?: number) => {
-    setPresetLocationId(locationId);
-    setPresetCategoryId(categoryId);
-    setEditItem(null);
-    setAddItemOpen(true);
-  };
-
-  const handleEditItem = (item: Item) => {
-    setItemCardOpen(false);
-    setEditItem(item);
-    setAddItemOpen(true);
-  };
-
-  const handleDeleteItem = (item: Item) => {
-    setItemCardOpen(false);
-    setItemToDelete(item);
-    setDeleteDialogOpen(true);
+    itemDialogs.openAddItem(locationId, categoryId);
   };
 
   const confirmDelete = () => {
-    if (itemToDelete) {
-      deleteItem.mutate(itemToDelete.id);
-      setItemToDelete(null);
+    if (itemDialogs.itemToDelete) {
+      deleteItem.mutate(itemDialogs.itemToDelete.id);
     }
-    setDeleteDialogOpen(false);
+    itemDialogs.clearDeleteRequest();
   };
 
   const handleSubmitItem = (data: ItemCreate, editId?: number) => {
@@ -111,32 +85,22 @@ export default function App() {
   };
 
   const handleLocationClick = (location: Location) => {
-    setSelectedLocation(location);
-    setLocationDialogOpen(true);
+    locationDialogs.openLocationDetails(location);
   };
 
   const handleUpdateLocation = (id: number, data: LocationUpdate) => {
     updateLocation.mutate({ id, data });
   };
 
-  const handleDeleteLocation = (location: Location) => {
-    setLocationToDelete(location);
-    setLocationDeleteDialogOpen(true);
-  };
-
   const handleCategoryClick = (category: Category) => {
-    setSelectedCategory(category);
-    setCategoryDialogOpen(true);
+    categoryDialogs.openCategoryDetails(category);
   };
 
   const confirmDeleteLocation = () => {
-    if (locationToDelete) {
-      deleteLocation.mutate(locationToDelete.id);
+    if (locationDialogs.locationToDelete) {
+      deleteLocation.mutate(locationDialogs.locationToDelete.id);
     }
-    setLocationDeleteDialogOpen(false);
-    setLocationDialogOpen(false);
-    setSelectedLocation(null);
-    setLocationToDelete(null);
+    locationDialogs.resetAfterDelete();
   };
 
   const locationItemCounts = items.reduce<Record<number, number>>(
@@ -200,72 +164,52 @@ export default function App() {
             locations={locations}
             categories={categories}
             items={items}
-          onItemClick={handleItemClick}
-          onAddItem={handleAddItem}
-          onLocationClick={handleLocationClick}
-        />
-      ) : (
-        <InventoryMode
-          items={items}
-          categories={categories}
-          locations={locations}
-          onItemClick={handleItemClick}
-          onLocationClick={handleLocationClick}
-          view={inventoryView}
-          onViewChange={setInventoryView}
-          onDeleteItem={(id) => deleteItem.mutate(id)}
-          onDeleteCategory={(id) => deleteCategory.mutate(id)}
-          onDeleteLocation={(id) => deleteLocation.mutate(id)}
-          categoryItemCounts={categoryItemCounts}
-          onCategoryClick={handleCategoryClick}
-        />
-      )}
+            onItemClick={handleItemClick}
+            onAddItem={handleAddItem}
+            onLocationClick={handleLocationClick}
+          />
+        ) : (
+          <InventoryMode
+            items={items}
+            categories={categories}
+            locations={locations}
+            onItemClick={handleItemClick}
+            onLocationClick={handleLocationClick}
+            view={inventoryView}
+            onViewChange={setInventoryView}
+            onDeleteItem={(id) => deleteItem.mutate(id)}
+            onDeleteCategory={(id) => deleteCategory.mutate(id)}
+            onDeleteLocation={(id) => deleteLocation.mutate(id)}
+            categoryItemCounts={categoryItemCounts}
+            onCategoryClick={handleCategoryClick}
+          />
+        )}
       </main>
 
       <GlobalDialogs
-        selectedItem={selectedItem}
-        itemCardOpen={itemCardOpen}
-        setItemCardOpen={setItemCardOpen}
-        addItemOpen={addItemOpen}
-        setAddItemOpen={setAddItemOpen}
+        itemDialogs={itemDialogs}
+        locationDialogs={locationDialogs}
+        categoryDialogs={categoryDialogs}
         addLocationOpen={addLocationOpen}
         setAddLocationOpen={setAddLocationOpen}
         addCategoryOpen={addCategoryOpen}
         setAddCategoryOpen={setAddCategoryOpen}
-        deleteDialogOpen={deleteDialogOpen}
-        setDeleteDialogOpen={setDeleteDialogOpen}
-        itemToDelete={itemToDelete}
-        categories={categories}
-        locations={locations}
-        presetLocationId={presetLocationId}
-        presetCategoryId={presetCategoryId}
-        editItem={editItem}
-        onEditItem={handleEditItem}
-        onDeleteItem={handleDeleteItem}
         onSubmitItem={handleSubmitItem}
         onConfirmDelete={confirmDelete}
         onCreateLocation={(d) => createLocation.mutate(d)}
         onCreateCategory={(d) => createCategory.mutate(d)}
         // Location details / edit / delete
-        selectedLocation={selectedLocation}
-        locationDialogOpen={locationDialogOpen}
-        setLocationDialogOpen={setLocationDialogOpen}
         onUpdateLocation={handleUpdateLocation}
-        onRequestDeleteLocation={handleDeleteLocation}
         locationItemCounts={locationItemCounts}
-        locationDeleteDialogOpen={locationDeleteDialogOpen}
-        setLocationDeleteDialogOpen={setLocationDeleteDialogOpen}
-        locationToDelete={locationToDelete}
         onConfirmDeleteLocation={confirmDeleteLocation}
         // Category details
-        selectedCategory={selectedCategory}
-        categoryDialogOpen={categoryDialogOpen}
-        setCategoryDialogOpen={setCategoryDialogOpen}
         categoryItemCounts={categoryItemCounts}
         onDeleteCategory={(cat) => deleteCategory.mutate(cat.id)}
         onUpdateCategory={(id, data: CategoryUpdate) =>
           updateCategory.mutate({ id, data })
         }
+        categories={categories}
+        locations={locations}
       />
     </div>
   );

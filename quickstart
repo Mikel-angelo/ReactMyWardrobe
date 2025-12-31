@@ -1,6 +1,6 @@
 & .\backend\venv\Scripts\Activate.ps1
 uvicorn backend.main:app --reload
 
-cd wardrobe-aa
+cd frontend
 npm run dev
 cd ..

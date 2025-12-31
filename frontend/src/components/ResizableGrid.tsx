@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { ReactNode } from 'react';
-import { GripVertical, Pencil, Eye } from 'lucide-react';
+import type { ReactNode, DragEvent } from 'react';
+import { GripVertical, Pencil, Eye, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // ============================================
@@ -52,6 +52,19 @@ export function ResizableGrid({ children, cardStates, onCardStatesChange }: Resi
     );
   }, [cardStates, onCardStatesChange]);
 
+  // Reorder cards in array order (DOM order controls grid placement)
+  const handleReorder = useCallback((sourceId: number, targetId: number) => {
+    if (sourceId === targetId) return;
+    const sourceIndex = cardStates.findIndex((c) => c.id === sourceId);
+    const targetIndex = cardStates.findIndex((c) => c.id === targetId);
+    if (sourceIndex === -1 || targetIndex === -1) return;
+
+    const next = [...cardStates];
+    const [moved] = next.splice(sourceIndex, 1);
+    next.splice(targetIndex, 0, moved);
+    onCardStatesChange(next);
+  }, [cardStates, onCardStatesChange]);
+
   return (
     <div className="space-y-3">
       {/* Edit/View mode toggle */}
@@ -96,6 +109,7 @@ export function ResizableGrid({ children, cardStates, onCardStatesChange }: Resi
               isEditMode={isEditMode}
               getColumnWidth={getColumnWidth}
               onStateChange={(updates) => updateCardState(state.id, updates)}
+              onReorder={handleReorder}
             >
               {child}
             </GridCard>
@@ -115,10 +129,18 @@ interface GridCardProps {
   isEditMode: boolean;
   getColumnWidth: () => number;
   onStateChange: (updates: Partial<GridCardState>) => void;
+  onReorder: (sourceId: number, targetId: number) => void;
   children: ReactNode;
 }
 
-function GridCard({ state, isEditMode, getColumnWidth, onStateChange, children }: GridCardProps) {
+function GridCard({
+  state,
+  isEditMode,
+  getColumnWidth,
+  onStateChange,
+  onReorder,
+  children,
+}: GridCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -220,6 +242,34 @@ function GridCard({ state, isEditMode, getColumnWidth, onStateChange, children }
   // Determine if content overflows (show scrollbar)
   const needsScroll = state.heightPx < minContentHeight;
 
+  // ---- REORDER LOGIC (HTML5 drag & drop) ----
+  const handleReorderStart = useCallback((e: DragEvent) => {
+    if (!isEditMode) return;
+    setIsDragging(true);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(state.id));
+  }, [isEditMode, state.id]);
+
+  const handleReorderOver = useCallback((e: DragEvent) => {
+    if (!isEditMode) return;
+    e.preventDefault(); // allow drop
+    e.dataTransfer.dropEffect = 'move';
+  }, [isEditMode]);
+
+  const handleReorderDrop = useCallback((e: DragEvent) => {
+    if (!isEditMode) return;
+    e.preventDefault();
+    const sourceId = Number(e.dataTransfer.getData('text/plain'));
+    if (!Number.isNaN(sourceId)) {
+      onReorder(sourceId, state.id);
+    }
+    setIsDragging(false);
+  }, [isEditMode, onReorder, state.id]);
+
+  const handleReorderEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
   return (
     <div
       ref={cardRef}
@@ -233,14 +283,19 @@ function GridCard({ state, isEditMode, getColumnWidth, onStateChange, children }
         gridColumn: `${clampedColumnStart} / span ${finalColumnSpan}`,
         height: `${finalHeight}px`,
       }}
+      onDragOver={handleReorderOver}
+      onDrop={handleReorderDrop}
     >
-      {/* Drag handle (only in edit mode) */}
       {isEditMode && (
         <div
-          className="absolute top-0 left-0 w-6 h-full flex items-center justify-center cursor-grab hover:bg-muted/50 z-20"
-          onMouseDown={handleDragStart}
+          className="absolute bottom-2 right-2 w-7 h-7 flex items-center justify-center cursor-move bg-muted/70 hover:bg-muted z-30 rounded"
+          draggable
+          onDragStart={handleReorderStart}
+          onDragOver={handleReorderOver}
+          onDrop={handleReorderDrop}
+          onDragEnd={handleReorderEnd}
         >
-          <GripVertical className="w-4 h-4 text-muted-foreground" />
+          <Move className="w-4 h-4 text-muted-foreground" />
         </div>
       )}
 
@@ -251,6 +306,7 @@ function GridCard({ state, isEditMode, getColumnWidth, onStateChange, children }
           h-full
           ${isEditMode ? 'pl-6' : ''}
           ${needsScroll ? 'overflow-auto' : 'overflow-hidden'}
+          ${isEditMode ? 'pointer-events-none select-none' : ''}
         `}
       >
         {children}
@@ -259,6 +315,14 @@ function GridCard({ state, isEditMode, getColumnWidth, onStateChange, children }
       {/* Resize handles (only in edit mode) */}
       {isEditMode && (
         <>
+          {/* Left edge: column drag within grid */}
+          <div
+            className="absolute top-0 left-0 w-6 h-full flex items-center justify-center cursor-grab hover:bg-muted/50 z-20"
+            onMouseDown={handleDragStart}
+          >
+            <GripVertical className="w-4 h-4 text-muted-foreground" />
+          </div>
+
           {/* Right edge: horizontal resize */}
           <div
             className="absolute top-0 right-0 w-2 h-full cursor-ew-resize hover:bg-primary/20 z-20"
