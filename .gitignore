@@ -1,0 +1,29 @@
+# -------------------------
+# Database / runtime data
+# -------------------------
+*.db
+
+# -------------------------
+# Frontend build output
+# -------------------------
+frontend/dist/
+
+# -------------------------
+# Tauri / Rust build output
+# -------------------------
+frontend/src-tauri/target/
+frontend/src-tauri/gen/
+
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.pyc
+venv/
+.env
+
+# -------------------------
+# OS junk
+# -------------------------
+.DS_Store
+Thumbs.db
