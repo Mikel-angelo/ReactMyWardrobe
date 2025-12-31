@@ -139,9 +139,7 @@ export function useInventoryItemsTable(
 
       if (filters.rating) {
         const target = Number(filters.rating);
-        if (!item.rating || item.rating !== target) {
-          return false;
-        }
+        if (item.rating !== target) return false;
       }
 
       if (filters.use.length > 0) {
