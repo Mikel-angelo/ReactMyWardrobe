@@ -27,7 +27,7 @@ interface ResizableGridProps {
 const TOTAL_COLUMNS = 12;
 const MIN_COLUMN_SPAN = 2;
 const MIN_HEIGHT_PX = 100;
-const SNAP_THRESHOLD = 0.5; // snap when within 50% of column boundary
+// const SNAP_THRESHOLD = 0.5; // snap when within 50% of column boundary
 
 // ============================================
 // MAIN COMPONENT

@@ -4,7 +4,7 @@ type ToastOptions = {
   variant?: "default" | "destructive";
 };
 
-export function toast({ title, description }: ToastOptions) {
+export function toast(_: ToastOptions) {
   // Minimal implementation for now
   // Replace later if you want UI toasts
   // console.log("[toast]", title, description ?? "");

@@ -1,3 +1,4 @@
+import type { Tag } from "./tags";
 
 export interface Item {
   id: number;
