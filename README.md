@@ -1,58 +1,36 @@
 # ReactMyWardrobe
 
-Fullstack demo: React (Vite) frontend and FastAPI backend.
+ReactMyWardrobe is a local-first desktop wardrobe manager built as a personal project. It focuses on managing clothing items, layouts, and locations with a fast, native-feeling UI.
 
-Repo layout
-```
-/backend     - FastAPI app, SQLAlchemy models
-/frontend    - React/Vite app
-README.md
-```
+## Tech Stack
+- React + Vite (TypeScript)
+- Tauri desktop shell
+- FastAPI backend
+- SQLite for per-user storage
 
-Prerequisites
-- Python 3.10+
-- Node.js 18+ and npm
-- SQLite is bundled (`wardrobe.db`). You can point to PostgreSQL via `DATABASE_URL` if desired.
+## Status
+🚧 Active development  
+Early-stage build; APIs, data models, and UI may change.
 
-Backend (FastAPI)
-1) From project root, create/activate venv
-```powershell
-python -m venv backend\venv
-& .\backend\venv\Scripts\Activate.ps1
-```
-2) Install deps
-```powershell
-pip install -r backend\requirements.txt
-```
-3) Init DB (optional; SQLite file already present)
-```powershell
-python -m backend.database.init_db
-```
-4) Run API
-```powershell
-uvicorn backend.main:app --reload
-```
-API: http://127.0.0.1:8000 (docs at /docs).
+## Development Setup
 
-Frontend (React/Vite)
-1) Install deps
-```powershell
+### Frontend
+```bash
 cd frontend
 npm install
-```
-2) Run dev server
-```powershell
 npm run dev
 ```
-Frontend: typically http://localhost:5173.
 
-Frontend architecture highlights
-- Dialog state hooks: `src/hooks/useItemDialogs.ts`, `useLocationDialogs.ts`, `useCategoryDialogs.ts`.
-- Items table sorting/filtering: `src/hooks/useItemsTable.ts`, wired in `src/components/ItemsTableSection.tsx` with `ItemsTableToolbar` + `ItemsTable`.
-- Wardrobe grid: `src/components/ResizableGrid.tsx` and `src/components/LocationCard.tsx` (top-right “+” adds a category).
-- Global dialogs: `src/dialogs/GlobalDialogs.tsx` (render-only; state lives in `App.tsx` via hooks).
+### Backend
+```bash
+python -m venv backend\venv
+backend\venv\Scripts\activate
+pip install -r backend\requirements.txt
+python -m backend.run_backend
+```
 
-Notes
-- Tailwind-style utilities; shared UI primitives in `src/components/ui`.
-- Toasts: `src/hooks/use-toast.ts`.
-
+### Desktop (Tauri)
+```bash
+cd frontend
+npm run tauri dev
+```
