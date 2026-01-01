@@ -133,30 +133,32 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader mode={mode} onModeChange={setMode} />
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:backdrop-blur">
+        <AppHeader mode={mode} onModeChange={setMode} />
 
-      <ActionBar
-        onAddItem={() => handleAddItem()}
-        onAddLocation={() => setAddLocationOpen(true)}
-        onAddCategory={() => setAddCategoryOpen(true)}
-        onViewLocations={() => {
-          setMode("inventory");
-          setInventoryView("locations");
-        }}
-        onViewCategories={() => {
-          setMode("inventory");
-          setInventoryView("categories");
-        }}
-        onViewItems={() => {
-          setMode("inventory");
-          setInventoryView("items");
-        }}
-        stats={{
-          locations: locations.length,
-          categories: categories.length,
-          items: items.length,
-        }}
-      />
+        <ActionBar
+          onAddItem={() => handleAddItem()}
+          onAddLocation={() => setAddLocationOpen(true)}
+          onAddCategory={() => setAddCategoryOpen(true)}
+          onViewLocations={() => {
+            setMode("inventory");
+            setInventoryView("locations");
+          }}
+          onViewCategories={() => {
+            setMode("inventory");
+            setInventoryView("categories");
+          }}
+          onViewItems={() => {
+            setMode("inventory");
+            setInventoryView("items");
+          }}
+          stats={{
+            locations: locations.length,
+            categories: categories.length,
+            items: items.length,
+          }}
+        />
+      </div>
 
       <main className="container py-4">
         {mode === "wardrobe" ? (

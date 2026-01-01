@@ -12,12 +12,6 @@ fn main() {
             let resource_dir = app.path().resource_dir().expect("resource dir");
             let backend_path = resource_dir.join("resources").join("backend.exe");
 
-
-            // DEBUG PRINT (will show in console)
-            eprintln!("RESOURCE DIR: {:?}", resource_dir);
-            eprintln!("BACKEND PATH: {:?}", backend_path);
-            eprintln!("BACKEND EXISTS: {}", backend_path.exists());
-
             let child = Command::new(&backend_path)
                 .spawn()
                 .expect("failed to start backend");

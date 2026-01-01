@@ -1,29 +1,28 @@
-# -------------------------
-# Database / runtime data
-# -------------------------
-*.db
+# ---------- Node / Frontend ----------
+node_modules/
+dist/
+.vite/
+.env
+.env.local
 
-# -------------------------
-# Frontend build output
-# -------------------------
-frontend/dist/
-
-# -------------------------
-# Tauri / Rust build output
-# -------------------------
-frontend/src-tauri/target/
-frontend/src-tauri/gen/
-
-# -------------------------
-# Python
-# -------------------------
+# ---------- Python ----------
+backend/venv/
+backend/.venv/
 __pycache__/
 *.pyc
-venv/
-.env
 
-# -------------------------
-# OS junk
-# -------------------------
+# ---------- PyInstaller ----------
+build/
+dist/
+*.spec
+
+# ---------- Tauri ----------
+src-tauri/target/
+src-tauri/icons/
+
+# ---------- OS ----------
 .DS_Store
 Thumbs.db
+
+# ---------- User Data ----------
+*.db
