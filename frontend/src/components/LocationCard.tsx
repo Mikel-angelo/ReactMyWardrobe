@@ -58,16 +58,16 @@ export function LocationCard({
     return (
       <div className="p-3 h-full">
         {/* HEADER */}
-        <div className="flex items-center justify-between gap-2 flex-shrink-0">
+        <div className="relative flex items-center gap-2 flex-shrink-0">
           <button
             onClick={() => onLocationClick(location)}
-            className="flex-1 text-left font-medium text-sm hover:underline rounded px-1 py-0.5"
+            className="absolute left-1/2 -translate-x-1/2 transform text-center font-medium text-sm hover:underline rounded px-1 py-0.5"
           >
             {location.name}
           </button>
           <button
             onClick={() => onAddItem(location.id)}
-            className="text-muted-foreground hover:text-foreground p-1"
+            className="text-muted-foreground hover:text-foreground p-1 ml-auto"
           >
             <Plus className="w-4 h-4" />
           </button>
@@ -84,17 +84,17 @@ export function LocationCard({
   return (    
     <div className="h-full flex flex-col">
       {/* HEADER (NEVER SHRINKS) */}
-      <div className="flex items-center gap-2 p-3 border-b border-border flex-shrink-0">
+      <div className="relative flex items-center gap-2 p-3 border-b border-border flex-shrink-0">
         <button
           onClick={() => onLocationClick(location)}
-          className="flex-1 text-left font-medium text-sm hover:underline rounded px-1 py-0.5 flex items-center justify-between"
+          className="absolute left-1/2 -translate-x-1/2 transform text-center font-medium text-sm hover:underline rounded px-1 py-0.5 flex items-center justify-center gap-2"
         >
           <span>{location.name}</span>
           <span className="count-badge">{locationItems.length}</span>
         </button>
         <button
           onClick={() => onAddItem(location.id)}
-          className="text-muted-foreground hover:text-foreground p-1"
+          className="text-muted-foreground hover:text-foreground p-1 ml-auto"
         >
           <Plus className="w-4 h-4" />
         </button>
