@@ -124,14 +124,14 @@ export function LocationCard({
 
               {isExpanded && (
                 <div className="bg-muted/30 border-t border-border px-4 py-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  <div className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]">
                     {categoryItems.map((item) => (
                       <button
                         key={item.id}
                         onClick={() => onItemClick(item)}
                         className="
-                          inline-flex items-center justify-center
-                          rounded-lg border border-border
+                          inline-flex items-center justify-center whitespace-nowrap min-w-[120px]
+                          rounded-xl border border-border
                           bg-background/90
                           px-2.5 py-1.5
                           text-xs font-medium

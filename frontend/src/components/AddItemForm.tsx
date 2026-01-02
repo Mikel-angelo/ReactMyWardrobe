@@ -118,6 +118,8 @@ export function AddItemForm({
     onClose();
   };
 
+  const isEditMode = Boolean(editItem);
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md bg-popover">
@@ -146,10 +148,11 @@ export function AddItemForm({
               <label className="label-mono block mb-1">
                 Category *
               </label>
+              
               <Select
                 value={categoryId}
                 onValueChange={setCategoryId}
-                disabled={!!presetCategoryId}
+                disabled={!isEditMode && Boolean(presetCategoryId)}
               >
                 <SelectTrigger className="h-8">
                   <SelectValue placeholder="Select" />
@@ -174,7 +177,7 @@ export function AddItemForm({
               <Select
                 value={locationId}
                 onValueChange={setLocationId}
-                disabled={!!presetLocationId}
+                disabled={!isEditMode && Boolean(presetLocationId)}
               >
                 <SelectTrigger className="h-8">
                   <SelectValue placeholder="Select" />
